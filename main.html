@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>HUD</title>
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" 
+		name="viewport" />
+		
+	<!-- Core CSS -->
+	<link href="assets/css/vendor.min.css" rel="stylesheet" />
+	<link href="assets/css/app.min.css" rel="stylesheet" />
+	
+	<!-- Leaflet -->
+	<link href="assets/css/leaflet.css" rel="stylesheet" />
+	
+	<!-- Video.js -->
+	<link href="assets/css/video-js.css" rel="stylesheet" />
+	
+	<!-- Style.css -->
+	<link href="assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+	<!-- BEGIN #app -->
+	<div id="app" class="app app-content-full-width app-content-full-height" style="padding-top: 0;">
+		<!-- Begin #content -->
+		<div id="content" class="app-content">
+			<div class="row">
+				<!-- Begin map -->
+				<div class="col-6 p-5px">
+					<div id="mapContainer" class="card text-white p-5px">
+						<div id="map">
+						
+						</div>
+						<!-- card-arrow -->
+						<div class="card-arrow">
+							<div class="card-arrow-top-left"></div>
+							<div class="card-arrow-top-right"></div>
+							<div class="card-arrow-bottom-left"></div>
+							<div class="card-arrow-bottom-right"></div>
+						</div>
+					</div>
+				</div>
+				<!-- End map -->
+				<!-- Begin supply code -->
+				<div class="col-2 p-5px">
+					<div class="card text-white p-5px" style="text-align: center;">
+						<h1>Supply Code</h1>
+						<div class="form-group mb-3">
+							<form id="supplyCodeForm" action="#" onsubmit="logSupplyCode();return false">
+								<input type="text" class="form-control form-control-lg" id="supplyCodeInput" maxlength="4" size="4" placeholder="xxxx" onkeyup="this.value = this.value.toUpperCase();">
+								<input type="submit" class="form-control form-control-lg btn btn-outline-theme btn-lg" id="supplyCodeSubmit" value="Submit" style="margin-top: 10px"></input>
+							</form>
+						</div>
+						<!-- card-arrow -->
+						<div class="card-arrow">
+							<div class="card-arrow-top-left"></div>
+							<div class="card-arrow-top-right"></div>
+							<div class="card-arrow-bottom-left"></div>
+							<div class="card-arrow-bottom-right"></div>
+						</div>
+					</div>
+				</div>
+				<!-- End supply code -->
+				<div class="col-4 p-5px">
+					<div class="card text-white p-5px">
+						<!-- card-arrow -->
+						<div class="card-arrow">
+							<div class="card-arrow-top-left"></div>
+							<div class="card-arrow-top-right"></div>
+							<div class="card-arrow-bottom-left"></div>
+							<div class="card-arrow-bottom-right"></div>
+						</div>
+					</div>
+				</div>
+				<!-- Begin activity log -->
+				<div class="col-6 p-5px">
+					<div id="videoTransmissionContainer" class="card text-white p-5px">
+						<h1>Video Transmission Log</h1>
+						<div class="table-responsive">
+							<table class="table table-hover text-nowrap">
+								<thread>
+									<th class="border-top-0 pt-0 pb-2">#</th>
+									<th class="border-top-0 pt-0 pb-2">Date</th>
+									<th class="border-top-0 pt-0 pb-2">Origin</th>
+									<th class="border-top-0 pt-0 pb-2">Topic</th>
+									<th class="border-top-0 pt-0 pb-2"></th>
+								</thead>
+								<tbody id="videoTransmissionTable">
+								
+								</tbody>
+							</table>
+						</div>
+						<!-- card-arrow -->
+						<div class="card-arrow">
+							<div class="card-arrow-top-left"></div>
+							<div class="card-arrow-top-right"></div>
+							<div class="card-arrow-bottom-left"></div>
+							<div class="card-arrow-bottom-right"></div>
+						</div>
+					</div>
+				</div>
+				<!-- End activity log -->
+			</div>
+		</div>
+		<!-- End Content -->
+		<div id="transmissionOverlay" class="modal modal-cover fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h1 class="modal-title">Incoming Transmission</h1>
+					</div>
+					<div class="modal-body">
+						<button type="button" id="acceptTransmission" class="btn btn-outline-theme btn-lg">Accept</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="videoOverlay" class="modal fade">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Incoming Transmission</h5>
+						<button type="button" class="btn-close" onclick="hideVideoOverlay()"></button>
+					</div>
+					<div id="videoWrapper" class="modal-body">
+						<video id="videoPlayer" class="video-js">
+						</video>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" onclick="hideVideoOverlay()">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Core JS -->
+	<script src="assets/js/vendor.min.js"></script>
+	<script src="assets/js/app.min.js"></script>
+	
+	<!-- Leaflet -->
+	<script src="assets/js/leaflet.js"></script>
+	
+	<!-- Video.js -->
+	<script src="assets/js/video.min.js"></script>
+	
+	<!-- Script.js -->
+	<script src="assets/js/script.js"></script>
+</body>
+</html>

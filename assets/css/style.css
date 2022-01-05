@@ -1,0 +1,26 @@
+#mapContainer {
+	width: 100%;
+	height: 45vh;
+}
+
+#map {
+	height: 100%;
+}
+
+#supplyCodeInput {
+	width: 7em;
+	margin: 0 auto;
+	display: block;
+	-moz-appearance: textfield; /* Remove arrows for mozilla */
+}	
+
+#videoTransmissionContainer {
+	height: 45vh;
+}
+
+/* Remove arrows for all other browsers */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
