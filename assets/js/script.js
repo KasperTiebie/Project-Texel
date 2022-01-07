@@ -16,12 +16,21 @@ map.on('drag', function() {
 });
 
 // ---------------VIDEO TRANSMISSION---------------
-function addToVideoTransmissionTable(origin, topic, video){
+function addToVideoTransmissionTable(origin, topic, video, hide){
+	/*
+		origin: The value to appear in the Origin column of the table
+		topic: The value to appear in the Topic column of the table
+		video: The name of the mp4 file available in /content/videos/
+		hide: Boolean value to hide or display the table row (currently does nothing)
+	*/
+	
 	videoTransmissionCount = Number(localStorage.getItem("videoTransmissionCount"));
 	if(!videoTransmissionCount){
 		localStorage.setItem("videoTransmissionCount", 1);
 		videoTransmissionCount = 1;
 	}
+	
+	// Creates the entry
 	var videoTransmissionTable = document.getElementById("videoTransmissionTable");
 	var row = videoTransmissionTable.insertRow(0);
 	var numberCell = row.insertCell(0);
@@ -30,23 +39,39 @@ function addToVideoTransmissionTable(origin, topic, video){
 	var topicCell = row.insertCell(3);
 	var videoCell = row.insertCell(4);
 	
+	// Sets the classes for all columns
 	numberCell.classList.add("align-middle");
 	dateCell.classList.add("align-middle");
 	originCell.classList.add("align-middle");
 	topicCell.classList.add("align-middle");
 	videoCell.classList.add("align-middle");
 
+	// Sets the contents of the entry
 	numberCell.innerHTML = videoTransmissionCount;
 	dateCell.innerHTML = new Date().toLocaleDateString() + " @ " + new Date().toLocaleTimeString();
 	originCell.innerHTML = origin;
 	topicCell.innerHTML = topic;
 	videoCell.innerHTML = '<button type="button" class="btn btn-outline-theme" onclick="showVideoOverlay(\'' + video + '\', true, true)">Play</button>' // Add the play button
-
-	var videoTransmissionContent = document.getElementById("videoTransmissionTable").innerHTML;
+	
+	// Hides the entry
+	if(hide){
+		row.style.display = "none";
+	}
 	
 	// Update localStorage
+	var videoTransmissionContent = document.getElementById("videoTransmissionTable").innerHTML;
+	
 	localStorage.setItem("videoTransmissionContent", videoTransmissionContent);
 	localStorage.setItem("videoTransmissionCount", videoTransmissionCount+1); 
+	
+	return row; // Return the row html element
+}
+
+function showVideoTransmissionEntry(entry){
+	/*
+		entry: The row of the table to make visible
+	*/
+	entry.style.display = "table-row";
 }
 
 // ---------------TRANSMISSION OVERLAY---------------
@@ -83,6 +108,10 @@ function showVideoOverlay(video, controls, autoplay){
 function hideVideoOverlay(){
 	$("#videoOverlay").modal("hide"); // Hide the modal
 	videoPlayer.pause();
+	
+	// Trigger Event so the supply code event can be dequeued
+	var event = new CustomEvent("videoOverlayHidden");
+	document.dispatchEvent(event);
 }
 
 // ---------------SUPPLY CODE---------------
@@ -96,27 +125,49 @@ function logSupplyCode(){
 			location.reload();
 			break;
 		case "M3LY": 
-			if(localStorage.getItem("M3LY") == "FALSE"){
-				showTransmissionOverlay();
-				$("#acceptTransmission").click(function(event){
-					hideTransmissionOverlay();
-					L.marker([53.14405640137026, 4.866172630500216]).addTo(map); 
-					showVideoOverlay("M3LY.mp4", false, true);
-					addToVideoTransmissionTable("Crossroads", "Supply Drops", "M3LY.mp4");
-					$(this).off(event);
+			if(localStorage.getItem("M3LY") == "FALSE"){ // If it already triggered
+				tableEntry = addToVideoTransmissionTable("Crossroads", "Supply Drops", "M3LY.mp4", true);
+				$("#queue").queue(function(){
+					console.log("M3LY");
+					setTimeout(function(){
+						showTransmissionOverlay();
+						$("#acceptTransmission").click(function(event){ // When the transmission is accepted
+							hideTransmissionOverlay();
+							L.marker([53.14405640137026, 4.866172630500216]).addTo(map); 
+							showVideoOverlay("M3LY.mp4", false, true);
+							showVideoTransmissionEntry(tableEntry);
+							$(this).off(event); // Deletes the event 
+						});
+					}, 5000);
+					var queueEntry = this;
+					$(document).on("videoOverlayHidden", function(){
+						console.log("Event dequeued");
+						$(queueEntry).dequeue();
+					});
 				});
 			}
 			localStorage.setItem("M3LY", "TRUE");
 			break;
 		case "K4SP":
 			if(localStorage.getItem("K4SP") == "FALSE"){
-				showTransmissionOverlay();
-				$("#acceptTransmission").click(function(event){	
-					hideTransmissionOverlay();
-					L.marker([53.04075401349149, 4.848431553836208]).addTo(map);
-					showVideoOverlay("K4SP.mp4", false, true);
-					addToVideoTransmissionTable("Crossroads", "Drop-off", "K4SP.mp4");
-					$(this).off(event);
+				tableEntry = addToVideoTransmissionTable("Crossroads", "Drop-off", "K4SP.mp4", true);
+				$("#queue").queue(function(){
+					console.log("K4SP");
+					setTimeout(function(){
+						showTransmissionOverlay();
+						$("#acceptTransmission").click(function(event){	
+							hideTransmissionOverlay();
+							L.marker([53.04075401349149, 4.848431553836208]).addTo(map);
+							showVideoOverlay("K4SP.mp4", false, true);
+							showVideoTransmissionEntry(tableEntry);
+							$(this).off(event);
+						});
+					}, 6000);
+					var queueEntry = this;
+					$(document).on("videoOverlayHidden", function(){
+						console.log("Event dequeued");
+						$(queueEntry).dequeue();
+					});
 				});
 			}
 			localStorage.setItem("K4SP", "TRUE");
@@ -145,10 +196,13 @@ function updateDashboard(){
 		L.marker([53.04075401349149, 4.848431553836208]).addTo(map);
 	}
 
-	// Load videot tranmission activity
+	// Load video tranmission activity
 	if(localStorage.getItem("videoTransmissionContent")){
 		document.getElementById("videoTransmissionTable").innerHTML = localStorage.getItem("videoTransmissionContent");
 	}
+	
+	// Makes all video transmissions visible (if the delay didn't finish before reload)
+	$("#videoTransmissionTable").find("tr").css("display", "table-row");
 }
 
 updateDashboard();
