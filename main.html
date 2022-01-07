@@ -24,12 +24,12 @@
 	<div id="app" class="app app-content-full-width app-content-full-height" style="padding-top: 0;">
 		<!-- Begin #content -->
 		<div id="content" class="app-content">
-			<div class="row">
+			<div class="row" style="height: 47vh">
 				<!-- Begin map -->
 				<div class="col-6 p-5px">
 					<div id="mapContainer" class="card text-white p-5px">
 						<div id="map">
-						
+						<!-- Empty for leaflet map -->
 						</div>
 						<!-- card-arrow -->
 						<div class="card-arrow">
@@ -61,17 +61,62 @@
 					</div>
 				</div>
 				<!-- End supply code -->
-				<div class="col-4 p-5px">
-					<div class="card text-white p-5px">
-						<!-- card-arrow -->
-						<div class="card-arrow">
-							<div class="card-arrow-top-left"></div>
-							<div class="card-arrow-top-right"></div>
-							<div class="card-arrow-bottom-left"></div>
-							<div class="card-arrow-bottom-right"></div>
+				<!-- Begin Status -->
+				<div class="col-4 p-5px" style="height: 100%">
+					<div class="row" style="height: 20%;">
+						<div class="col-6">
+							<div class="card text-white p-5px" style="height: 100%">
+								<div class="row align-items-center" style="height: 100%; text-align: center;">
+									<div class="col-3">
+										<i class="fas fa-3x fa-signal"></i>
+									</div>
+									<div class="col-3 align-middle">
+										<i class="fas fa-3x fa-battery-three-quarters"></i>
+									</div>
+									<div class="col-3 align-middle">
+										<i class="fas fa-3x fa-wifi"></i>
+									</div>
+									<div class="col-3 align-middle">
+										<i class="fab fa-3x fa-bluetooth"></i>
+									</div>
+								</div>
+								
+								<!-- card-arrow -->
+								<div class="card-arrow">
+									<div class="card-arrow-top-left"></div>
+									<div class="card-arrow-top-right"></div>
+									<div class="card-arrow-bottom-left"></div>
+									<div class="card-arrow-bottom-right"></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-6">
+							<!-- card-arrow -->
+							<div class="card-arrow">
+								<div class="card-arrow-top-left"></div>
+								<div class="card-arrow-top-right"></div>
+								<div class="card-arrow-bottom-left"></div>
+								<div class="card-arrow-bottom-right"></div>
+							</div>
+						</div>
+					</div>
+					<div class="row" style="height: 80%">
+						<div class="col-12 pt-5px" style="height: 80%">
+							<div class="card text-white p-5px" style="height: 100%">
+								<!-- card-arrow -->
+								<div class="card-arrow">
+									<div class="card-arrow-top-left"></div>
+									<div class="card-arrow-top-right"></div>
+									<div class="card-arrow-bottom-left"></div>
+									<div class="card-arrow-bottom-right"></div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
+				<!-- End Status -->
+			</div>
+			<div class="row" style="height: 47vh">
 				<!-- Begin activity log -->
 				<div class="col-6 p-5px">
 					<div id="videoTransmissionContainer" class="card text-white p-5px">
@@ -144,7 +189,8 @@
 	<!-- Video.js -->
 	<script src="assets/js/video.min.js"></script>
 	
-	<!-- Script.js -->
+	<!-- SupplyCodes.js & Script.js -->
+	<script src="assets/js/supplycodes.js"></script>
 	<script src="assets/js/script.js"></script>
 </body>
 </html>

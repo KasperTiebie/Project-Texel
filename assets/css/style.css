@@ -1,6 +1,6 @@
 #mapContainer {
 	width: 100%;
-	height: 45vh;
+	height: 100%;
 }
 
 #map {
@@ -15,7 +15,7 @@
 }	
 
 #videoTransmissionContainer {
-	height: 45vh;
+	height: 100%;
 }
 
 /* Remove arrows for all other browsers */

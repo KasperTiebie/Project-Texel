@@ -116,62 +116,44 @@ function hideVideoOverlay(){
 
 // ---------------SUPPLY CODE---------------
 function logSupplyCode(){
-	var supplyCode = document.getElementById("supplyCodeInput").value;
+	var supplyCodeInput = document.getElementById("supplyCodeInput").value;
 	
-	// Do Stuff
-	switch(supplyCode){
-		case "RESE": // Resets the whole dashboard
-			resetDashboard();
-			location.reload();
-			break;
-		case "M3LY": 
-			if(localStorage.getItem("M3LY") == "FALSE"){ // If it already triggered
-				tableEntry = addToVideoTransmissionTable("Crossroads", "Supply Drops", "M3LY.mp4", true);
+	// RESET code, resets the whole dashboard
+	if(supplyCodeInput == "RESE"){
+		resetDashboard();
+		location.reload();
+		return 0;
+	}
+	
+	for(supplyCode in supplyCodes){
+		supplyCodeObject = supplyCodes[supplyCode];
+		if(supplyCodeObject.code == supplyCodeInput){
+			if(localStorage.getItem(supplyCodeObject.code) == "FALSE"){ // If it already triggered
+				tableEntry = addToVideoTransmissionTable(
+					supplyCodeObject.videoTransmission.origin, // Origin
+					supplyCodeObject.videoTransmission.topic, // Topic
+					supplyCodeObject.videoTransmission.video, // Video
+					true);
 				$("#queue").queue(function(){
-					console.log("M3LY");
 					setTimeout(function(){
 						showTransmissionOverlay();
 						$("#acceptTransmission").click(function(event){ // When the transmission is accepted
 							hideTransmissionOverlay();
-							L.marker([53.14405640137026, 4.866172630500216]).addTo(map); 
-							showVideoOverlay("M3LY.mp4", false, true);
+							supplyCodeObject.onAcceptTransmission();
+							showVideoOverlay(supplyCodeObject.videoTransmission.video, false, true);
 							showVideoTransmissionEntry(tableEntry);
 							$(this).off(event); // Deletes the event 
 						});
-					}, 5000);
+					}, supplyCodeObject.videoTransmission.delay);
 					var queueEntry = this;
 					$(document).on("videoOverlayHidden", function(){
-						console.log("Event dequeued");
 						$(queueEntry).dequeue();
 					});
 				});
 			}
-			localStorage.setItem("M3LY", "TRUE");
-			break;
-		case "K4SP":
-			if(localStorage.getItem("K4SP") == "FALSE"){
-				tableEntry = addToVideoTransmissionTable("Crossroads", "Drop-off", "K4SP.mp4", true);
-				$("#queue").queue(function(){
-					console.log("K4SP");
-					setTimeout(function(){
-						showTransmissionOverlay();
-						$("#acceptTransmission").click(function(event){	
-							hideTransmissionOverlay();
-							L.marker([53.04075401349149, 4.848431553836208]).addTo(map);
-							showVideoOverlay("K4SP.mp4", false, true);
-							showVideoTransmissionEntry(tableEntry);
-							$(this).off(event);
-						});
-					}, 6000);
-					var queueEntry = this;
-					$(document).on("videoOverlayHidden", function(){
-						console.log("Event dequeued");
-						$(queueEntry).dequeue();
-					});
-				});
-			}
-			localStorage.setItem("K4SP", "TRUE");
-			break;
+			localStorage.setItem(supplyCodeObject.code, "TRUE");
+			break; // Break out of the for loop
+		} 
 	}
 
 	// Clear Input
@@ -187,13 +169,13 @@ function resetDashboard(){
 }
 
 function updateDashboard(){
-	// M3LY
-	if(localStorage.getItem("M3LY") == "TRUE"){
-		// Show Marker
-		L.marker([53.14405640137026, 4.866172630500216]).addTo(map); 
-	}
-	if(localStorage.getItem("K4SP") == "TRUE"){
-		L.marker([53.04075401349149, 4.848431553836208]).addTo(map);
+	// Execute all onReload functions for all unlocked supply codes
+	for(supplyCode in supplyCodes){
+		supplyCodeObject = supplyCodes[supplyCode];
+		if(localStorage.getItem(supplyCodeObject.code) == "TRUE"){
+			// Execute all functions from the unlocked supply codes
+			supplyCodeObject.onReload();
+		}
 	}
 
 	// Load video tranmission activity

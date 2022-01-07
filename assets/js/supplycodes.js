@@ -1,10 +1,10 @@
-supplyCodes = {
-	K4SP: {
-		code: "M4LY",
+const supplyCodes = {
+	M3LY: {
+		code: "M3LY",
 		videoTransmission: {
 			origin: "Crossroads",
 			topic: "Supply Drops",
-			video: "M4LY.mp4",
+			video: "M3LY.mp4",
 			hide: true,
 			delay: 2000
 		},
@@ -15,7 +15,7 @@ supplyCodes = {
 			L.marker([53.14405640137026, 4.866172630500216]).addTo(map); 
 		}
 	},
-	M4LY: {
+	K4SP: {
 		code: "K4SP",
 		videoTransmission: {
 			origin: "Crossroads",
