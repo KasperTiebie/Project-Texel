@@ -6,7 +6,7 @@ const supplyCodes = {
 			topic: "Supply Drops",
 			video: "M3LY.mp4",
 			hide: true,
-			delay: 2000
+			delay: 5000
 		},
 		onAcceptTransmission: function(){
 			L.marker([53.14405640137026, 4.866172630500216]).addTo(map); 
@@ -22,7 +22,7 @@ const supplyCodes = {
 			topic: "Drop-off",
 			video: "K4SP.mp4",
 			hide: true,
-			delay: 3000
+			delay: 5000
 		},
 		onAcceptTransmission: function(){
 			L.marker([53.04075401349149, 4.848431553836208]).addTo(map);

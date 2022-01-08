@@ -116,7 +116,7 @@ function hideVideoOverlay(){
 
 // ---------------SUPPLY CODE---------------
 function logSupplyCode(){
-	var supplyCodeInput = document.getElementById("supplyCodeInput").value;
+	var supplyCodeInput = $("#supplyCodeInput").val();
 	
 	// RESET code, resets the whole dashboard
 	if(supplyCodeInput == "RESE"){
@@ -133,20 +133,25 @@ function logSupplyCode(){
 					supplyCodeObject.videoTransmission.origin, // Origin
 					supplyCodeObject.videoTransmission.topic, // Topic
 					supplyCodeObject.videoTransmission.video, // Video
-					true);
+					true); // Hide
 				$("#queue").queue(function(){
-					setTimeout(function(){
+					// Timeout
+					setTimeout(function(currentSupplyCodeObject, currentTableEntry){ // Pass the supplyCodeObject and the tableEntry at the time of calling this function (so if these update, the function will execute with the old values)
 						showTransmissionOverlay();
+						// onAcceptTransmission
 						$("#acceptTransmission").click(function(event){ // When the transmission is accepted
 							hideTransmissionOverlay();
-							supplyCodeObject.onAcceptTransmission();
-							showVideoOverlay(supplyCodeObject.videoTransmission.video, false, true);
-							showVideoTransmissionEntry(tableEntry);
+							currentSupplyCodeObject.onAcceptTransmission();
+							showVideoOverlay(currentSupplyCodeObject.videoTransmission.video, false, true);
+							showVideoTransmissionEntry(currentTableEntry);
 							$(this).off(event); // Deletes the event 
 						});
-					}, supplyCodeObject.videoTransmission.delay);
+					}, supplyCodeObject.videoTransmission.delay, supplyCodeObject, tableEntry);
+					
+					// Dequeue
 					var queueEntry = this;
 					$(document).on("videoOverlayHidden", function(){
+						console.log("dequeue" + supplyCodeObject.code);
 						$(queueEntry).dequeue();
 					});
 				});
