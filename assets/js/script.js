@@ -128,25 +128,28 @@ function logSupplyCode(){
 	for(supplyCode in supplyCodes){
 		supplyCodeObject = supplyCodes[supplyCode];
 		if(supplyCodeObject.code == supplyCodeInput){
-			if(localStorage.getItem(supplyCodeObject.code) == "FALSE"){ // If it already triggered
-				tableEntry = addToVideoTransmissionTable(
+			if(localStorage.getItem(supplyCodeObject.code) == "FALSE" || localStorage.getItem(supplyCodeObject.code) == null){ // If it already triggered or it doesn't exist yet
+				videoTransmissionLogEntry = addToVideoTransmissionTable(
 					supplyCodeObject.videoTransmission.origin, // Origin
 					supplyCodeObject.videoTransmission.topic, // Topic
 					supplyCodeObject.videoTransmission.video, // Video
 					true); // Hide
 				$("#queue").queue(function(){
 					// Timeout
-					setTimeout(function(currentSupplyCodeObject, currentTableEntry){ // Pass the supplyCodeObject and the tableEntry at the time of calling this function (so if these update, the function will execute with the old values)
+					setTimeout(function(currentSupplyCodeObject, currentVideoTransmissionLogEntry){ // Pass the supplyCodeObject and the tableEntry at the time of calling this function (so if these update, the function will execute with the old values)
+						document.getElementById("incomingTransmissionAudio").play(); // Play audio
 						showTransmissionOverlay();
+						addToActivityLogTable("Incoming Transmission", true);
 						// onAcceptTransmission
 						$("#acceptTransmission").click(function(event){ // When the transmission is accepted
+							document.getElementById("incomingTransmissionAudio").pause(); // Stop playing audio
 							hideTransmissionOverlay();
 							currentSupplyCodeObject.onAcceptTransmission();
 							showVideoOverlay(currentSupplyCodeObject.videoTransmission.video, false, true);
-							showVideoTransmissionEntry(currentTableEntry);
+							showVideoTransmissionEntry(currentVideoTransmissionLogEntry);
 							$(this).off(event); // Deletes the event 
 						});
-					}, supplyCodeObject.videoTransmission.delay, supplyCodeObject, tableEntry);
+					}, supplyCodeObject.videoTransmission.delay, supplyCodeObject, videoTransmissionLogEntry);
 					
 					// Dequeue
 					var queueEntry = this;
@@ -165,12 +168,42 @@ function logSupplyCode(){
 	document.getElementById("supplyCodeInput").value = null;
 }
 
+// ---------------ACTIVITY LOG---------------
+function addToActivityLogTable(activity, hide){
+	/*
+		activity: The type of activity to appear in the log
+	*/
+	
+	// Creates the entry
+	var activityLogTable = document.getElementById("activityLogTable");
+	var row = activityLogTable.insertRow(0);
+	var leftCell = row.insertCell(0);
+	var logCell = row.insertCell(1);
+	
+	// Sets the classes for all columns
+	leftCell.classList.add("align-middle");
+	logCell.classList.add("align-middle");
+	// Sets the contents of the entry
+	leftCell.innerHTML = ">";
+	logCell.innerHTML = activity + " @ " + new Date().toLocaleTimeString();
+	
+	// Update localStorage
+	var activityLogContent = document.getElementById("activityLogTable").innerHTML;
+	localStorage.setItem("activityLogContent", activityLogContent);
+	
+	return row; // Return the row html element
+}
+
 // ---------------DASHBOARD---------------
 function resetDashboard(){
-	localStorage.setItem("M3LY", "FALSE");
-	localStorage.setItem("K4SP", "FALSE");
+	for(supplyCode in supplyCodes){
+		localStorage.setItem(supplyCodes[supplyCode].code, "FALSE");
+	}
+	//localStorage.setItem("M3LY", "FALSE");
+	//localStorage.setItem("K4SP", "FALSE");
 	localStorage.setItem("videoTransmissionCount", 1);
 	localStorage.removeItem("videoTransmissionContent");
+	localStorage.removeItem("activityLogContent");
 }
 
 function updateDashboard(){
@@ -186,6 +219,10 @@ function updateDashboard(){
 	// Load video tranmission activity
 	if(localStorage.getItem("videoTransmissionContent")){
 		document.getElementById("videoTransmissionTable").innerHTML = localStorage.getItem("videoTransmissionContent");
+	}
+	
+	if(localStorage.getItem("activityLogContent")){
+		document.getElementById("activityLogTable").innerHTML = localStorage.getItem("activityLogContent");
 	}
 	
 	// Makes all video transmissions visible (if the delay didn't finish before reload)

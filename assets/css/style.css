@@ -14,13 +14,13 @@
 	-moz-appearance: textfield; /* Remove arrows for mozilla */
 }	
 
-#videoTransmissionContainer {
-	height: 100%;
-}
-
 /* Remove arrows for all other browsers */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+#activityLogTable td {
+	padding: 2px;
 }
