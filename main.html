@@ -42,21 +42,53 @@
 				</div>
 				<!-- End map -->
 				<!-- Begin supply code -->
-				<div class="col-3 p-5px">
-					<div class="card text-white p-5px" style="text-align: center;">
-						<h1>Supply Code</h1>
-						<div class="form-group mb-3">
-							<form id="supplyCodeForm" action="#" onsubmit="logSupplyCode();return false">
-								<input type="text" class="form-control form-control-lg" id="supplyCodeInput" maxlength="4" size="4" placeholder="xxxx" onkeyup="this.value = this.value.toUpperCase();">
-								<input type="submit" class="form-control form-control-lg btn btn-outline-theme btn-lg" id="supplyCodeSubmit" value="Submit" style="margin-top: 10px"></input>
-							</form>
+				<div class="col-3" style="height: 100%">
+					<div class="row" style="height: 50%">
+						<div class="col-12 p-5px" style="height: 100%">
+							<div class="card text-white p-5px" style="text-align: center; height: 100%;">
+								<h1>Supply Code</h1>
+								<div class="form-group mb-3">
+									<form id="supplyCodeForm" action="#" onsubmit="logSupplyCode();return false">
+										<input type="text" class="form-control form-control-lg" id="supplyCodeInput" maxlength="4" size="4" placeholder="xxxx" onkeyup="this.value = this.value.toUpperCase();">
+										<input type="submit" class="form-control form-control-lg btn btn-outline-theme btn-lg" id="supplyCodeSubmit" value="Submit" style="margin-top: 10px"></input>
+									</form>
+								</div>
+								<!-- card-arrow -->
+								<div class="card-arrow">
+									<div class="card-arrow-top-left"></div>
+									<div class="card-arrow-top-right"></div>
+									<div class="card-arrow-bottom-left"></div>
+									<div class="card-arrow-bottom-right"></div>
+								</div>
+							</div>
 						</div>
-						<!-- card-arrow -->
-						<div class="card-arrow">
-							<div class="card-arrow-top-left"></div>
-							<div class="card-arrow-top-right"></div>
-							<div class="card-arrow-bottom-left"></div>
-							<div class="card-arrow-bottom-right"></div>
+					</div>
+					<div class="row" style="height: 25%">
+						<div class="col-12 p-5px" style="height: 100%">
+							<div class="card text-white p-5px" style="display: flex; justify-content: center; align-content: center; height: 100%; widht: 100%; text-align: center;">
+								<h1 id="currentTime" style="font-family: Courier New">N/A</h1>
+								<!-- card-arrow -->
+								<div class="card-arrow">
+									<div class="card-arrow-top-left"></div>
+									<div class="card-arrow-top-right"></div>
+									<div class="card-arrow-bottom-left"></div>
+									<div class="card-arrow-bottom-right"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row" style="height: 25%">
+						<div class="col-12 p-5px" style="height: 100%">
+							<div class="card text-white p-5px" style="display: flex; justify-content: center; align-content: center; height: 100%; widht: 100%; text-align: center;">
+								<h1 id="timerText" style="font-family: Courier New">00:00:00</h1>
+								<!-- card-arrow -->
+								<div class="card-arrow">
+									<div class="card-arrow-top-left"></div>
+									<div class="card-arrow-top-right"></div>
+									<div class="card-arrow-bottom-left"></div>
+									<div class="card-arrow-bottom-right"></div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -65,7 +97,7 @@
 				<div class="col-3 p-5px" style="height: 100%">
 					<div class="card text-white p-5px" style="height: 100%">
 						<table class="table table-borderless" style="text-align: center;">
-							<tbody>
+							<!--<tbody>
 								<tr>
 									<td><i class="fas fa-2x fa-signal"></i></td>
 									<td class="align-middle">Signal - <span style="color: green;">Strong</span></td>
@@ -82,7 +114,8 @@
 									<td><i class="fab fa-2x fa-bluetooth"></i></td>
 									<td class="align-middle">Bluetooth - <span style="color: orange">Not Connected</span></td>
 								</tr>
-							</tbody>
+							</tbody>-->
+							<canvas id="lineChart"></canvas>
 						</table>
 						
 						<!-- card-arrow -->
@@ -131,7 +164,7 @@
 						<h1>Activity Log</h1>
 						<div class="table-responsive" style="max-height: 39vh;">
 							<table class="table table-borderless" cellspacing="0">
-								<tbody id="activityLogTable" style="color: #39ff14;">
+								<tbody id="activityLogTable">
 								</tbody>
 							</table>
 						</div>
@@ -172,7 +205,7 @@
 						</video>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" onclick="hideVideoOverlay()">Close</button>
+						<button type="button" class="btn btn-outline-danger" onclick="hideVideoOverlay()">Disconnect</button>
 					</div>
 				</div>
 			</div>
@@ -189,6 +222,9 @@
 	
 	<!-- Video.js -->
 	<script src="assets/js/video.min.js"></script>
+	
+	<!-- Chart.js -->
+	<script src="assets/plugins/chart.js/dist/chart.min.js"/></script>
 	
 	<!-- SupplyCodes.js & Script.js -->
 	<script src="assets/js/supplycodes.js"></script>

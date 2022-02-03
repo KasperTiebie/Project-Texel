@@ -1,7 +1,99 @@
+// ---------------TIME AND TIMER---------------
+var lineChart;
+$(document).ready(function(){
+	var COLOR_THEME = getComputedStyle(document.body).getPropertyValue("--bs-theme");
+	var COLOR_WHITE = getComputedStyle(document.body).getPropertyValue("--bs-white");
+
+	setInterval(function(){
+		$("#currentTime").html(new Date().toLocaleTimeString("nl-NL"));
+		timerStart = localStorage.getItem("timerStart");
+		if(timerStart == "TRUE"){
+			timerEnd = localStorage.getItem("timerEnd");
+			$("#timerText").html(new Date(timerEnd - new Date().getTime()).toLocaleTimeString("nl-NL", {timeZone: "UTC"}));
+		}
+	}, 1000);
+	
+	lineChartData = [12, 19, 11, 13, 9, 10, 15, 12, 15, 14, 19, 20];
+	
+	// Add line chart
+	var lineChartCanvas = document.getElementById('lineChart');
+	lineChart = new Chart(lineChartCanvas, {
+	type: 'line',
+	data: {
+	  labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+	  datasets: [{
+		color: COLOR_THEME,
+		backgroundColor: hexToRgba(COLOR_THEME, .2),
+		borderColor: COLOR_THEME,
+		borderWidth: 4,
+		pointBackgroundColor: COLOR_WHITE,
+		pointBorderWidth: 1.5,
+		pointRadius: 4,
+		data: lineChartData,
+		fill: "origin"
+	  }]
+	},
+	options: {
+		plugins: {
+			legend: {
+				display: false
+			},
+			tooltips: {
+				enabled: false
+			},
+			title: {
+				display: true,
+				text: "Heart Rate"
+			}
+        },
+		scales: {
+			x: {
+				grid: {
+					display: false
+				},
+				ticks: {
+				  callback: () => ('') // Empty labels
+				}
+			},
+			y: {
+				min: 0,
+				max: 21,
+				grid: {
+					display: false
+				},
+				ticks: {
+				  callback: () => ('') // Empty labels
+				}
+			}
+		}
+	}
+	});
+	
+	setInterval(function(){
+		// Update lineChart data
+		lineChart.data.datasets.forEach((dataset) => {
+			dataset.data.shift();
+			lineChart.update();
+			dataset.data.push(Math.ceil(Math.random() * 10 + 10));
+			lineChart.update("none");
+		});
+		//lineChart.update();
+	}, 1500);
+});
+
+function startTimer(hours){
+	timerStart = localStorage.getItem("timerStart");
+	if(timerStart == "FALSE"){
+		timerEnd = new Date().getTime() + hours*60*60*1000;
+		localStorage.setItem("timerEnd", timerEnd) // Sets the 'timerEnd' equal to the UNIX time (in ms) at which the 'startTimer' function was called + the amount of hours the timer should run for
+		localStorage.setItem("timerStart", "TRUE");
+	}
+}
+
 // ---------------MAP---------------
 var map = L.map('map', {
 	minZoom: 11,
-	maxZoom: 15
+	maxZoom: 16
 }).setView([51.505, -0.09], 11);
 L.tileLayer('assets/atlas/{z}/{x}/{y}.png').addTo(map);
 
@@ -139,7 +231,7 @@ function logSupplyCode(){
 					setTimeout(function(currentSupplyCodeObject, currentVideoTransmissionLogEntry){ // Pass the supplyCodeObject and the tableEntry at the time of calling this function (so if these update, the function will execute with the old values)
 						document.getElementById("incomingTransmissionAudio").play(); // Play audio
 						showTransmissionOverlay();
-						addToActivityLogTable("Incoming Transmission", true);
+						addToActivityLogTable("Incoming Transmission", "#39ff14");
 						// onAcceptTransmission
 						$("#acceptTransmission").click(function(event){ // When the transmission is accepted
 							document.getElementById("incomingTransmissionAudio").pause(); // Stop playing audio
@@ -169,9 +261,10 @@ function logSupplyCode(){
 }
 
 // ---------------ACTIVITY LOG---------------
-function addToActivityLogTable(activity, hide){
+function addToActivityLogTable(activity, color){
 	/*
 		activity: The type of activity to appear in the log
+		color: The text color (green: #39ff14, blue: #14fffb)
 	*/
 	
 	// Creates the entry
@@ -180,9 +273,11 @@ function addToActivityLogTable(activity, hide){
 	var leftCell = row.insertCell(0);
 	var logCell = row.insertCell(1);
 	
-	// Sets the classes for all columns
+	// Sets the classes and colors for all columns
 	leftCell.classList.add("align-middle");
+	leftCell.style.color = color;
 	logCell.classList.add("align-middle");
+	logCell.style.color = color;
 	// Sets the contents of the entry
 	leftCell.innerHTML = ">";
 	logCell.innerHTML = activity + " @ " + new Date().toLocaleTimeString();
@@ -199,9 +294,10 @@ function resetDashboard(){
 	for(supplyCode in supplyCodes){
 		localStorage.setItem(supplyCodes[supplyCode].code, "FALSE");
 	}
-	//localStorage.setItem("M3LY", "FALSE");
-	//localStorage.setItem("K4SP", "FALSE");
+	
 	localStorage.setItem("videoTransmissionCount", 1);
+	localStorage.setItem("timerStart", "FALSE");
+	localStorage.removeItem("timerEnd");
 	localStorage.removeItem("videoTransmissionContent");
 	localStorage.removeItem("activityLogContent");
 }
