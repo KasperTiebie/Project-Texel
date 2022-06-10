@@ -8,19 +8,25 @@ $(document).ready(function(){
 		$("#currentTime").html(new Date().toLocaleTimeString("nl-NL"));
 		timerStart = localStorage.getItem("timerStart");
 		if(timerStart == "TRUE"){
-			timerEnd = localStorage.getItem("timerEnd");
-			$("#timerText").html(new Date(timerEnd - new Date().getTime()).toLocaleTimeString("nl-NL", {timeZone: "UTC"}));
+			currentTime = localStorage.getItem("currentTime");
+			if(currentTime < 0){
+				$("#timerText").css("color", "red");
+				$("#timerText").html(new Date(Math.abs(currentTime) * 1000).toISOString().substr(11, 8));
+			}else{
+				$("#timerText").html(new Date(currentTime * 1000).toISOString().substr(11, 8));
+			}
+			localStorage.setItem("currentTime", currentTime - 1);
 		}
 	}, 1000);
 	
-	lineChartData = [12, 19, 11, 13, 9, 10, 15, 12, 15, 14, 19, 20];
+	signalStrengthData = [12, 19, 11, 13, 9, 10, 15, 12, 15, 14, 19, 20, 12, 19, 11, 13, 9, 10, 15, 12, 15, 14, 19, 20];
 	
-	// Add line chart
-	var lineChartCanvas = document.getElementById('lineChart');
-	lineChart = new Chart(lineChartCanvas, {
+	// Add signalStrengthChart
+	var signalStrengthChart = document.getElementById('signalStrengthChart');
+	signalStrengthChart = new Chart(signalStrengthChart, {
 	type: 'line',
 	data: {
-	  labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+	  labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"],
 	  datasets: [{
 		color: COLOR_THEME,
 		backgroundColor: hexToRgba(COLOR_THEME, .2),
@@ -29,7 +35,7 @@ $(document).ready(function(){
 		pointBackgroundColor: COLOR_WHITE,
 		pointBorderWidth: 1.5,
 		pointRadius: 4,
-		data: lineChartData,
+		data: signalStrengthData,
 		fill: "origin"
 	  }]
 	},
@@ -43,7 +49,7 @@ $(document).ready(function(){
 			},
 			title: {
 				display: true,
-				text: "Heart Rate"
+				text: "Signal Strength"
 			}
         },
 		scales: {
@@ -71,21 +77,86 @@ $(document).ready(function(){
 	
 	setInterval(function(){
 		// Update lineChart data
-		lineChart.data.datasets.forEach((dataset) => {
+		signalStrengthChart.data.datasets.forEach((dataset) => {
 			dataset.data.shift();
-			lineChart.update();
+			signalStrengthChart.update();
 			dataset.data.push(Math.ceil(Math.random() * 10 + 10));
-			lineChart.update("none");
+			signalStrengthChart.update("none");
 		});
-		//lineChart.update();
-	}, 1500);
+	}, 1000);
+	
+	// Add incomingDataChart
+	
+	incomingDataChartData = [12, 19, 11, 13, 9, 10, 15, 12, 15, 14, 19, 20, 12, 19, 11, 13, 9, 10, 15, 12, 15, 14, 19, 20];
+	
+	var incomingDataChart = document.getElementById('incomingDataChart');
+	incomingDataChart = new Chart(incomingDataChart, {
+	type: 'line',
+	data: {
+	  labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"],
+	  datasets: [{
+		color: COLOR_THEME,
+		backgroundColor: hexToRgba(COLOR_THEME, .2),
+		borderColor: COLOR_THEME,
+		borderWidth: 4,
+		pointBackgroundColor: COLOR_WHITE,
+		pointBorderWidth: 1.5,
+		pointRadius: 4,
+		data: incomingDataChartData,
+		fill: "origin"
+	  }]
+	},
+	options: {
+		plugins: {
+			legend: {
+				display: false
+			},
+			tooltips: {
+				enabled: false
+			},
+			title: {
+				display: true,
+				text: "Incoming Data"
+			}
+        },
+		scales: {
+			x: {
+				grid: {
+					display: false
+				},
+				ticks: {
+				  callback: () => ('') // Empty labels
+				}
+			},
+			y: {
+				min: 0,
+				max: 21,
+				grid: {
+					display: false
+				},
+				ticks: {
+				  callback: () => ('') // Empty labels
+				}
+			}
+		}
+	}
+	});
+	
+	setInterval(function(){
+		// Update lineChart data
+		incomingDataChart.data.datasets.forEach((dataset) => {
+			dataset.data.shift();
+			incomingDataChart.update();
+			dataset.data.push(Math.ceil(Math.random() * 10 + 10));
+			incomingDataChart.update("none");
+		});
+	}, 1000);
 });
 
-function startTimer(hours){
+function startTimer(seconds){
 	timerStart = localStorage.getItem("timerStart");
 	if(timerStart == "FALSE"){
-		timerEnd = new Date().getTime() + hours*60*60*1000;
-		localStorage.setItem("timerEnd", timerEnd) // Sets the 'timerEnd' equal to the UNIX time (in ms) at which the 'startTimer' function was called + the amount of hours the timer should run for
+		localStorage.setItem("currentTime", seconds);
 		localStorage.setItem("timerStart", "TRUE");
 	}
 }
@@ -93,22 +164,65 @@ function startTimer(hours){
 // ---------------MAP---------------
 var map = L.map('map', {
 	minZoom: 11,
-	maxZoom: 16
+	maxZoom: 16,
+	attributionControl: false
 }).setView([51.505, -0.09], 11);
 L.tileLayer('assets/atlas/{z}/{x}/{y}.png').addTo(map);
+
+var largeMap = L.map('largeMap', {
+	minZoom: 11,
+	maxZoom: 16,
+	attributionControl: false
+}).setView([51.505, -0.09], 11);
+L.tileLayer('assets/atlas/{z}/{x}/{y}.png').addTo(largeMap);
 
 var southWestBounds = L.latLng(52.97883529714314, 4.7016928777880045);
 var northEastBounds = L.latLng(53.19242662175752, 4.9220329874584445);
 var bounds = L.latLngBounds(southWestBounds, northEastBounds);
 
 map.setMaxBounds(bounds)
+largeMap.setMaxBounds(bounds);
 
 map.on('drag', function() {
     map.panInsideBounds(bounds, { animate: false });
 });
 
+largeMap.on('drag', function() {
+    largeMap.panInsideBounds(bounds, { animate: false });
+});
+
+function showMapOverlay(){
+	$("#mapOverlay").modal({backdrop: "static", keyboard: false});
+	$("#mapOverlay").modal("show");
+	setTimeout(function(){
+		largeMap.invalidateSize();
+	}, 300);
+}
+
+function hideMapOverlay(){
+	$("#mapOverlay").modal("hide");
+}
+
+function addMarkerToMap(coordinates, icon, text){
+	if(icon == null){
+		icon = blueIcon;
+	}
+	
+	L.marker(coordinates, {icon: icon}).addTo(map).bindPopup(text);
+	L.marker(coordinates, {icon: icon}).addTo(largeMap).bindPopup(text);
+
+	addToActivityLogTable("Marker Added", "#14fffb");
+}
+
+function addCircleMarkerToMap(coordinates, color, fillColor, radius, text){
+	L.circle(coordinates, {color: color, fillColor: fillColor, fillOpacity: 0.5, radius: radius}).addTo(map).bindPopup(text);
+	L.circle(coordinates, {color: color, fillColor: fillColor, fillOpacity: 0.5, radius: radius}).addTo(largeMap).bindPopup(text);
+	
+	addToActivityLogTable("Area Marked", "#fce94f");
+}
+
 // ---------------VIDEO TRANSMISSION---------------
-function addToVideoTransmissionTable(origin, topic, video, hide){
+function addToVideoTransmissionTable(origin, topic, video, attachment, hide){
 	/*
 		origin: The value to appear in the Origin column of the table
 		topic: The value to appear in the Topic column of the table
@@ -130,6 +244,7 @@ function addToVideoTransmissionTable(origin, topic, video, hide){
 	var originCell = row.insertCell(2);
 	var topicCell = row.insertCell(3);
 	var videoCell = row.insertCell(4);
+	var attachmentCell = row.insertCell(5);
 	
 	// Sets the classes for all columns
 	numberCell.classList.add("align-middle");
@@ -137,13 +252,18 @@ function addToVideoTransmissionTable(origin, topic, video, hide){
 	originCell.classList.add("align-middle");
 	topicCell.classList.add("align-middle");
 	videoCell.classList.add("align-middle");
+	attachmentCell.classList.add("align-middle");
 
 	// Sets the contents of the entry
 	numberCell.innerHTML = videoTransmissionCount;
 	dateCell.innerHTML = new Date().toLocaleDateString() + " @ " + new Date().toLocaleTimeString();
 	originCell.innerHTML = origin;
 	topicCell.innerHTML = topic;
-	videoCell.innerHTML = '<button type="button" class="btn btn-outline-theme" onclick="showVideoOverlay(\'' + video + '\', true, true)">Play</button>' // Add the play button
+	videoCell.innerHTML = '<button type="button" class="btn btn-outline-theme" onclick="showVideoOverlay(\'' + video + '\', true, true)">Play</button>'; // Add the play button
+	//attachmentCell.innerHTML = '<button type="button", class"btn btn-outline-theme", onclick="showAttachmentOverlay()"><i class="fas fa-file-alt"></i></button>';
+	if(attachment != "NA"){
+		attachmentCell.innerHTML = '<a href="#", onclick="showAttachmentOverlay(\'' + attachment + '\')"><i class="fas fa-2x fa-file-alt"></i></a>';
+	}
 	
 	// Hides the entry
 	if(hide){
@@ -184,9 +304,8 @@ var videoPlayer = videojs("videoPlayer", {
 function showVideoOverlay(video, controls, autoplay){
 	$("#videoOverlay").modal({backdrop: "static", keyboard: false});
 	$("#videoOverlay").modal("show"); // Show modal
-	$("#videoOverlay").on("shown.bs.modal", function(){ // Configure the video player
+	$("#videoOverlay").on("shown.bs.modal", function(event){ // Configure the video player
 		videoPlayer.controls(controls);
-		videoPlayer.autoplay(autoplay);
 		videoPlayer.width($("#videoWrapper").width());
 		videoPlayer.height(($("#videoWrapper").width()/16)*9);
 
@@ -194,12 +313,23 @@ function showVideoOverlay(video, controls, autoplay){
 			src: "content/videos/" + video,
 			type: "video/mp4"
 		});
+		
+		// Workaround for the autplay function of video.js as not all browsers support autoplay
+		if(autoplay){
+			// TODO: Delete the event after the call
+			videoPlayer.one("loadeddata", function(event){
+				$("#videoPlayer video").get(0).play();
+			});
+		}
+		
+		$(this).off(event); // Deletes the event 
 	});
 }
 
 function hideVideoOverlay(){
+	$("#videoPlayer video").get(0).pause();
 	$("#videoOverlay").modal("hide"); // Hide the modal
-	videoPlayer.pause();
+	//videoPlayer.pause();
 	
 	// Trigger Event so the supply code event can be dequeued
 	var event = new CustomEvent("videoOverlayHidden");
@@ -221,33 +351,36 @@ function logSupplyCode(){
 		supplyCodeObject = supplyCodes[supplyCode];
 		if(supplyCodeObject.code == supplyCodeInput){
 			if(localStorage.getItem(supplyCodeObject.code) == "FALSE" || localStorage.getItem(supplyCodeObject.code) == null){ // If it already triggered or it doesn't exist yet
-				videoTransmissionLogEntry = addToVideoTransmissionTable(
-					supplyCodeObject.videoTransmission.origin, // Origin
-					supplyCodeObject.videoTransmission.topic, // Topic
-					supplyCodeObject.videoTransmission.video, // Video
-					true); // Hide
-				$("#queue").queue(function(){
-					// Timeout
-					setTimeout(function(currentSupplyCodeObject, currentVideoTransmissionLogEntry){ // Pass the supplyCodeObject and the tableEntry at the time of calling this function (so if these update, the function will execute with the old values)
-						document.getElementById("incomingTransmissionAudio").play(); // Play audio
-						showTransmissionOverlay();
-						addToActivityLogTable("Incoming Transmission", "#39ff14");
-						// onAcceptTransmission
-						$("#acceptTransmission").click(function(event){ // When the transmission is accepted
-							document.getElementById("incomingTransmissionAudio").pause(); // Stop playing audio
-							hideTransmissionOverlay();
-							currentSupplyCodeObject.onAcceptTransmission();
-							showVideoOverlay(currentSupplyCodeObject.videoTransmission.video, false, true);
-							showVideoTransmissionEntry(currentVideoTransmissionLogEntry);
-							$(this).off(event); // Deletes the event 
+				supplyCodeObject.transmissions.forEach(function(transmission){
+					videoTransmissionLogEntry = addToVideoTransmissionTable(
+						transmission.videoTransmission.origin, // Origin
+						transmission.videoTransmission.topic, // Topic
+						transmission.videoTransmission.video, // Video
+						transmission.videoTransmission.attachment, // Attachment
+						true); // Hide
+	
+					$("#queue").queue(function(){
+						// Timeout
+						setTimeout(function(currentTransmission, currentVideoTransmissionLogEntry){ // Pass the supplyCodeObject and the tableEntry at the time of calling this function (so if these update, the function will execute with the old values)
+							$("#incomingTransmissionAudio")[0].play(); // Play audio
+							showTransmissionOverlay();
+							addToActivityLogTable("Incoming Transmission", "#39ff14");
+							// onAcceptTransmission
+							$("#acceptTransmission").click(function(event){ // When the transmission is accepted
+								document.getElementById("incomingTransmissionAudio").pause(); // Stop playing audio
+								hideTransmissionOverlay();
+								currentTransmission.onAcceptTransmission();
+								showVideoOverlay(currentTransmission.videoTransmission.video, false, true);
+								showVideoTransmissionEntry(currentVideoTransmissionLogEntry);
+								$(this).off(event); // Deletes the event 
+							});
+						}, transmission.videoTransmission.delay*1000, transmission, videoTransmissionLogEntry);
+						
+						// Dequeue
+						var queueEntry = this;
+						$(document).on("videoOverlayHidden", function(){
+							$(queueEntry).dequeue();
 						});
-					}, supplyCodeObject.videoTransmission.delay, supplyCodeObject, videoTransmissionLogEntry);
-					
-					// Dequeue
-					var queueEntry = this;
-					$(document).on("videoOverlayHidden", function(){
-						console.log("dequeue" + supplyCodeObject.code);
-						$(queueEntry).dequeue();
 					});
 				});
 			}
@@ -289,6 +422,14 @@ function addToActivityLogTable(activity, color){
 	return row; // Return the row html element
 }
 
+// ---------------ATTACHMENT OVERLAY---------------
+function showAttachmentOverlay(attachment){
+	switch(attachment){
+		case "B13R": $("#B13ROverlay").modal("show"); break;
+		case "B5S3": $("#B5S3Overlay").modal("show"); break;
+	}
+};
+
 // ---------------DASHBOARD---------------
 function resetDashboard(){
 	for(supplyCode in supplyCodes){
@@ -297,7 +438,7 @@ function resetDashboard(){
 	
 	localStorage.setItem("videoTransmissionCount", 1);
 	localStorage.setItem("timerStart", "FALSE");
-	localStorage.removeItem("timerEnd");
+	localStorage.removeItem("currentTime", 0);
 	localStorage.removeItem("videoTransmissionContent");
 	localStorage.removeItem("activityLogContent");
 }
@@ -308,7 +449,9 @@ function updateDashboard(){
 		supplyCodeObject = supplyCodes[supplyCode];
 		if(localStorage.getItem(supplyCodeObject.code) == "TRUE"){
 			// Execute all functions from the unlocked supply codes
-			supplyCodeObject.onReload();
+			supplyCodeObject.transmissions.forEach(function(transmission){
+				transmission.onReload();
+			});
 		}
 	}
 

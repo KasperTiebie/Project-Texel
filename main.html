@@ -5,7 +5,7 @@
 	<title>HUD</title>
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" 
 		name="viewport" />
-		
+	
 	<!-- Core CSS -->
 	<link href="assets/css/vendor.min.css" rel="stylesheet" />
 	<link href="assets/css/app.min.css" rel="stylesheet" />
@@ -31,6 +31,11 @@
 						<div id="map">
 						<!-- Empty for leaflet map -->
 						</div>
+						
+						<div id="overlayExpandMap">
+							<a href="#" onclick="showMapOverlay()"><i class="bi bi-fullscreen"></i></a>
+						</div>
+						
 						<!-- card-arrow -->
 						<div class="card-arrow">
 							<div class="card-arrow-top-left"></div>
@@ -97,25 +102,8 @@
 				<div class="col-3 p-5px" style="height: 100%">
 					<div class="card text-white p-5px" style="height: 100%">
 						<table class="table table-borderless" style="text-align: center;">
-							<!--<tbody>
-								<tr>
-									<td><i class="fas fa-2x fa-signal"></i></td>
-									<td class="align-middle">Signal - <span style="color: green;">Strong</span></td>
-								</tr>
-								<tr>
-									<td><i class="fas fa-2x fa-battery-three-quarters"></i></td>
-									<td class="align-middle">Battery - <span id="battery_text" style="color: orange;">50%</span></td>
-								</tr>
-								<tr>
-									<td><i class="fas fa-2x fa-wifi"></i></td>
-									<td class="align-middle">WiFi - <span style="color: red;">Not Available</span></td>
-								</tr>
-								<tr>
-									<td><i class="fab fa-2x fa-bluetooth"></i></td>
-									<td class="align-middle">Bluetooth - <span style="color: orange">Not Connected</span></td>
-								</tr>
-							</tbody>-->
-							<canvas id="lineChart"></canvas>
+							<canvas id="signalStrengthChart"></canvas>
+							<canvas id="incomingDataChart"></canvas>
 						</table>
 						
 						<!-- card-arrow -->
@@ -135,13 +123,14 @@
 					<div id="videoTransmissionContainer" class="card text-white p-5px" style="height: 100%">
 						<h1>Video Transmission Log</h1>
 						<div class="table-responsive" style="max-height: 39vh;">
-							<table class="table table-hover text-nowrap">
+							<table class="table table-hover text-nowrap text-center">
 								<thread>
 									<th class="border-top-0 pt-0 pb-2">#</th>
 									<th class="border-top-0 pt-0 pb-2">Date</th>
 									<th class="border-top-0 pt-0 pb-2">Origin</th>
 									<th class="border-top-0 pt-0 pb-2">Topic</th>
 									<th class="border-top-0 pt-0 pb-2"></th>
+									<th class="border-top-0 pt-0 pb-2">Attachment</th>
 								</thead>
 								<tbody id="videoTransmissionTable">
 								
@@ -210,9 +199,58 @@
 				</div>
 			</div>
 		</div>
+		<div id="mapOverlay" class="modal fade">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Map</h5>
+						<button type="button" class="btn-close" onclick="hideMapOverlay()"></button>
+					</div>
+					<div id="largeMapWrapper" class="modal-body">
+						<div id="largeMap">
+						<!-- Empty for leaflet map -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="B13ROverlay" class="modal fade">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">B13R Attachment</h5>
+						<button type="button" class="btn-close" onclick="$('#B13ROverlay').modal('hide');"></button>
+					</div>
+					<div class="modal-body">
+						<h1>Markers</h1>
+						<p>Soldaten, wij hebben zojuist twee groepen markers toegevoegd aan jullie dashboard: </p>
+						<ul>
+							<li>Ammunition Supplies - Paars (waterpunten)</li>
+							<li>Ammunition Disposal Sites - Oranje (WC's)</li>
+						</ul>
+						
+						<p>Maak hier gebruik van waar nodig.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="B5S3Overlay" class="modal fade">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">B5S3 Attachment</h5>
+						<button type="button" class="btn-close" onclick="$('#B5S3Overlay').modal('hide');"></button>
+					</div>
+					<div class="modal-body">
+						<h1>Correctie</h1>
+						<p>Soldaten, één van onze scouts hield blijkbaar zijn kompas achterstevoren. Zojuist hadden we het over het westen, maar dit moet het <strong>oosten</strong> zijn. Loop dus naar het oosten toe. Op het dashboard is dit wel juist gemarkeerd.</p>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<div id="queue"></div>
-	<audio id="incomingTransmissionAudio", src="content/audio/incomingTransmission.wav", preload="auto" loop></audio>
+	<audio id="incomingTransmissionAudio", src="content/audio/incomingTransmission.mp3", preload="auto" loop></audio>
 	<!-- Core JS -->
 	<script src="assets/js/vendor.min.js"></script>
 	<script src="assets/js/app.min.js"></script>
@@ -226,7 +264,8 @@
 	<!-- Chart.js -->
 	<script src="assets/plugins/chart.js/dist/chart.min.js"/></script>
 	
-	<!-- SupplyCodes.js & Script.js -->
+	<!-- SupplyCodes.js, icons.js & Script.js -->
+	<script src="assets/js/icons.js"></script>
 	<script src="assets/js/supplycodes.js"></script>
 	<script src="assets/js/script.js"></script>
 </body>
